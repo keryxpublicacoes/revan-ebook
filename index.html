@@ -4,13 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Revan eBook</title>
-
-  <!-- jQuery (obrigatório para o turn.js) -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-  <!-- Turn.js (efeito de virar página) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4.1.0/turn.min.js"></script>
-
   <style>
     body {
       margin: 0;
@@ -51,24 +44,42 @@
     .ebook-container {
       position: relative;
       width: 100%;
-      min-height: 700px; /* Mantive para preservar estrutura */
+      min-height: 85vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 10px 0;
     }
-    #flipbook {
-      width: 90%;
-      max-width: 600px;
-      height: 600px; /* AGORA altura em pixels fixos */
-      background: #111;
+    .flip-container {
+      overflow: hidden;
+      width: 100%;
+      display: flex;
+      justify-content: center;
     }
-    #flipbook .page {
-      background: #fff;
-      background-size: cover;
-      background-position: center;
+    .flipper {
+      transition: transform 0.6s ease; /* Suavizado o slide */
+      width: 100%;
+      max-width: 500px;
     }
+    .ebook-page {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2.5em;
+      color: #d3ac67;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      z-index: 10;
+    }
+    .left-arrow { left: 10px; }
+    .right-arrow { right: 10px; }
     .progress-bar-container {
       width: 100%;
       padding: 5px 0;
@@ -109,9 +120,15 @@
 </div>
 
 <div class="ebook-container">
-  <div id="flipbook">
-    <!-- As páginas serão carregadas dinamicamente -->
+  <button class="arrow left-arrow" onclick="previousPage()">&#x25C0;</button>
+
+  <div class="flip-container">
+    <div class="flipper" id="flipper">
+      <img id="ebookPage" class="ebook-page" src="EBOOK - Revan a história de um homem_page-0001.jpg" alt="Página do eBook">
+    </div>
   </div>
+
+  <button class="arrow right-arrow" onclick="nextPage()">&#x25B6;</button>
 </div>
 
 <div class="progress-bar-container">
@@ -122,35 +139,50 @@
 <script>
   const totalPages = 188;
   let currentPage = 1;
+  const flipper = document.getElementById('flipper');
+  const ebookPage = document.getElementById('ebookPage');
 
-  // Carrega as páginas dentro do Flipbook
-  $(document).ready(function() {
-    for (let i = 1; i <= totalPages; i++) {
-      const pageNumber = i.toString().padStart(4, '0');
-      $('#flipbook').append(`<div class="page" style="background-image:url('EBOOK - Revan a história de um homem_page-${pageNumber}.jpg')"></div>`);
+  function updatePage() {
+    const pageNumber = currentPage.toString().padStart(4, '0');
+
+    // Aplica um slide simples para a esquerda
+    flipper.style.transform = 'translateX(100%)'; // Move para a direita rapidamente
+    setTimeout(() => {
+      ebookPage.src = `EBOOK - Revan a história de um homem_page-${pageNumber}.jpg`;
+      flipper.style.transform = 'translateX(0%)'; // Volta deslizando para a esquerda suavemente
+    }, 200);
+
+    document.getElementById('progressBar').value = currentPage;
+    document.getElementById('pageNumber').innerText = `Página ${currentPage} de ${totalPages}`;
+  }
+
+  function nextPage() {
+    if (currentPage < totalPages) {
+      currentPage++;
+      updatePage();
     }
+  }
 
-    // Inicializa o Turn.js após carregar as páginas
-    $('#flipbook').turn({
-      width: 600,
-      height: 600,
-      autoCenter: true,
-      acceleration: true,
-      gradients: true
-    });
+  function previousPage() {
+    if (currentPage > 1) {
+      currentPage--;
+      updatePage();
+    }
+  }
 
-    // Atualiza número da página
-    $('#flipbook').bind('turned', function(event, page) {
-      currentPage = page;
-      $('#progressBar').val(page);
-      $('#pageNumber').text(`Página ${page} de ${totalPages}`);
-    });
+  document.getElementById('progressBar').addEventListener('input', (e) => {
+    currentPage = parseInt(e.target.value);
+    updatePage();
+  });
 
-    // Controle pelo slider
-    $('#progressBar').on('input', function() {
-      const page = parseInt($(this).val());
-      $('#flipbook').turn('page', page);
-    });
+  document.getElementById('ebookPage').addEventListener('click', (e) => {
+    const x = e.clientX;
+    const screenWidth = window.innerWidth;
+    if (x < screenWidth / 2) {
+      previousPage();
+    } else {
+      nextPage();
+    }
   });
 </script>
 
