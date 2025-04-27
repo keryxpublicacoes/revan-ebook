@@ -1,100 +1,125 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Revan - eBook</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Revan – eBook</title>
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: black;
       color: white;
+      overflow-x: hidden;
     }
-    .container {
+    .top-section {
+      background: #000;
       text-align: center;
-      padding: 10px;
+      padding: 20px 10px 10px;
     }
-    .mockup {
-      max-width: 90%;
-      height: auto;
-      margin-top: 10px;
+    .top-section img {
+      width: 80px;
+      margin-bottom: 10px;
     }
-    .button {
-      background-color: #d3ac67;
-      color: black;
+    .download-btn {
+      background: #d3ac67;
+      color: #000;
       border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
+      padding: 12px 20px;
       font-size: 1em;
       font-weight: bold;
-      margin: 15px 0;
+      border-radius: 6px;
       cursor: pointer;
+      margin-bottom: 15px;
     }
-    .description {
-      margin: 10px 0;
+    .info-text {
+      margin: 10px auto;
+      width: 90%;
       font-size: 0.9em;
-      padding: 0 15px;
+      text-align: center;
     }
-    .ebook {
-      max-width: 100%;
+    .page {
+      width: 100%;
       height: auto;
+      max-width: 480px;
+      margin: 10px auto;
+      display: block;
+      border-radius: 8px;
     }
     .navigation {
-      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 10px 0;
     }
     .arrow {
       font-size: 2em;
-      color: white;
+      color: #fff;
       background: none;
       border: none;
       cursor: pointer;
-      margin: 0 20px;
+    }
+    .arrow:hover {
+      color: #d3ac67;
     }
   </style>
 </head>
 <body>
-
-<div class="container">
-  <img src="mockup_cel.png" alt="Mockup eBook" class="mockup">
-  <br>
-  <a href="https://drive.google.com/file/d/18a9bi1r2_rMeg9c8diNH9WT1aD68oNT4/view?usp=sharing" target="_blank">
-    <button class="button">Baixar PDF Completo</button>
-  </a>
-  <p class="description">
-    Você pode fazer o download do seu e-book em PDF ou tocar na tela para ler diretamente abaixo.
-  </p>
-  <img id="ebook" src="EBOOK - Revan a história de um homem_page-0001.jpg" alt="Ebook" class="ebook">
-  <div class="navigation">
-    <button onclick="prevPage()" class="arrow">&#8592;</button>
-    <button onclick="nextPage()" class="arrow">&#8594;</button>
+  <div class="top-section">
+    <img src="mockup_cel.png" alt="Mockup eBook">
+    <br>
+    <a href="https://drive.google.com/file/d/18a9bi1r2_rMeg9c8diNH9WT1aD68oNT4/view?usp=sharing" target="_blank">
+      <button class="download-btn">Baixar PDF Completo</button>
+    </a>
+    <p class="info-text">Você pode fazer o download do seu e-book em PDF ou tocar na tela para ler diretamente abaixo.</p>
   </div>
-</div>
+
+  <img id="ebook-page" src="EBOOK - Revan a história de um homem_page-0001.jpg" alt="eBook" class="page">
+
+  <div class="navigation">
+    <button class="arrow" onclick="previousPage()">⬅️</button>
+    <button class="arrow" onclick="nextPage()">➡️</button>
+  </div>
 
 <script>
   let currentPage = 1;
   const totalPages = 188;
 
-  function updateImage() {
-    const ebook = document.getElementById('ebook');
-    const pageNum = currentPage.toString().padStart(4, '0');
-    ebook.src = `EBOOK - Revan a história de um homem_page-${pageNum}.jpg`;
+  function updatePage() {
+    const pageNumber = currentPage.toString().padStart(4, '0');
+    document.getElementById('ebook-page').src = `EBOOK - Revan a história de um homem_page-${pageNumber}.jpg`;
   }
 
   function nextPage() {
     if (currentPage < totalPages) {
       currentPage++;
-      updateImage();
+      updatePage();
     }
   }
 
-  function prevPage() {
+  function previousPage() {
     if (currentPage > 1) {
       currentPage--;
-      updateImage();
+      updatePage();
     }
   }
-</script>
 
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  document.getElementById('ebook-page').addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+
+  document.getElementById('ebook-page').addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleGesture();
+  });
+
+  function handleGesture() {
+    if (touchEndX < touchStartX - 50) nextPage();
+    if (touchEndX > touchStartX + 50) previousPage();
+  }
+</script>
 </body>
 </html>
