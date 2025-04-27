@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Revan eBook</title>
 
-  <!-- Primeiro carrega o jQuery (obrigatório para o turn.js funcionar) -->
+  <!-- jQuery (obrigatório para o turn.js) -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-  <!-- Depois carrega o Turn.js -->
+  <!-- Turn.js (efeito de virar página) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4.1.0/turn.min.js"></script>
 
   <style>
@@ -51,7 +51,7 @@
     .ebook-container {
       position: relative;
       width: 100%;
-      min-height: 85vh;
+      min-height: 700px; /* Mantive para preservar estrutura */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -61,7 +61,7 @@
     #flipbook {
       width: 90%;
       max-width: 600px;
-      height: 85vh;
+      height: 600px; /* AGORA altura em pixels fixos */
       background: #111;
     }
     #flipbook .page {
@@ -122,37 +122,35 @@
 <script>
   const totalPages = 188;
   let currentPage = 1;
-  const flipbook = document.getElementById('flipbook');
 
-  // Carrega as páginas dinamicamente
-  for (let i = 1; i <= totalPages; i++) {
-    const page = document.createElement('div');
-    page.className = 'page';
-    const pageNumber = i.toString().padStart(4, '0');
-    page.style.backgroundImage = `url('EBOOK - Revan a história de um homem_page-${pageNumber}.jpg')`;
-    flipbook.appendChild(page);
-  }
+  // Carrega as páginas dentro do Flipbook
+  $(document).ready(function() {
+    for (let i = 1; i <= totalPages; i++) {
+      const pageNumber = i.toString().padStart(4, '0');
+      $('#flipbook').append(`<div class="page" style="background-image:url('EBOOK - Revan a história de um homem_page-${pageNumber}.jpg')"></div>`);
+    }
 
-  // Inicializa o Flipbook
-  $('#flipbook').turn({
-    width: '100%',
-    height: '100%',
-    autoCenter: true,
-    acceleration: true,
-    gradients: true
-  });
+    // Inicializa o Turn.js após carregar as páginas
+    $('#flipbook').turn({
+      width: 600,
+      height: 600,
+      autoCenter: true,
+      acceleration: true,
+      gradients: true
+    });
 
-  // Atualiza o número da página no slider
-  $('#flipbook').bind('turned', function(event, page) {
-    currentPage = page;
-    document.getElementById('progressBar').value = page;
-    document.getElementById('pageNumber').innerText = `Página ${page} de ${totalPages}`;
-  });
+    // Atualiza número da página
+    $('#flipbook').bind('turned', function(event, page) {
+      currentPage = page;
+      $('#progressBar').val(page);
+      $('#pageNumber').text(`Página ${page} de ${totalPages}`);
+    });
 
-  // Controle pelo progress bar
-  document.getElementById('progressBar').addEventListener('input', (e) => {
-    const page = parseInt(e.target.value);
-    $('#flipbook').turn('page', page);
+    // Controle pelo slider
+    $('#progressBar').on('input', function() {
+      const page = parseInt($(this).val());
+      $('#flipbook').turn('page', page);
+    });
   });
 </script>
 
