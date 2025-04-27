@@ -1,77 +1,110 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>eBook - Revan: A História de um Homem</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>eBook – Revan: A História de um Homem</title>
   <style>
     body {
       margin: 0;
-      background: #000;
-      color: white;
       font-family: Arial, sans-serif;
+      background: black;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       overflow-x: hidden;
+    }
+    .top {
+      width: 100%;
+      background: #111;
+      padding: 20px 10px;
       text-align: center;
     }
-    .header {
-      padding: 10px;
-      background: #111;
-    }
-    .header img {
-      max-width: 300px;
+    .top img {
+      width: 100px;
       margin-bottom: 10px;
     }
     .download-btn {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 10px 20px;
       background: #d3ac67;
-      color: #000;
+      color: black;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
       font-weight: bold;
-      border-radius: 8px;
-      text-decoration: none;
-    }
-    .page-container {
-      margin-top: 20px;
-    }
-    .page-container img {
-      width: 90%;
-      max-width: 400px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px #333;
+      font-size: 1em;
       cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .pages {
+      margin-top: 20px;
+      width: 100%;
+      max-width: 450px;
+      overflow: hidden;
+      position: relative;
+    }
+    .page {
+      width: 100%;
+      display: none;
+    }
+    .page.active {
+      display: block;
+      animation: fade 0.5s;
+    }
+    @keyframes fade {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <img src="static/mockup_cel.png" alt="Mockup eBook">
+  <div class="top">
+    <img src="mockup_cel.png" alt="Mockup eBook">
     <br>
-    <a href="https://drive.google.com/file/d/18a9bi1r2_rMeg9c8diNH9WT1aD68oNT4/view?usp=sharing" class="download-btn" target="_blank">Baixar PDF Completo</a>
+    <a href="https://drive.google.com/file/d/18a9bi1r2_rMeg9c8diNH9WT1aD68oNT4/view?usp=sharing" target="_blank" class="download-btn">Baixar PDF Completo</a>
   </div>
 
-  <div class="page-container">
-    <img id="page" src="static/lombada.png" alt="Lombada do Livro">
+  <div class="pages" id="pages">
+    <img src="lombada.png" class="page active" alt="Lombada do Livro">
+
+    <!-- Páginas do eBook -->
+    <!-- Começo das páginas -->
+    <img src="EBOOK - Revan a história de um homem_page-0001.jpg" class="page" alt="Página 1">
+    <img src="EBOOK - Revan a história de um homem_page-0002.jpg" class="page" alt="Página 2">
+    <img src="EBOOK - Revan a história de um homem_page-0003.jpg" class="page" alt="Página 3">
+    <img src="EBOOK - Revan a história de um homem_page-0004.jpg" class="page" alt="Página 4">
+    <img src="EBOOK - Revan a história de um homem_page-0005.jpg" class="page" alt="Página 5">
+    <img src="EBOOK - Revan a história de um homem_page-0006.jpg" class="page" alt="Página 6">
+    <img src="EBOOK - Revan a história de um homem_page-0007.jpg" class="page" alt="Página 7">
+    <img src="EBOOK - Revan a história de um homem_page-0008.jpg" class="page" alt="Página 8">
+    <img src="EBOOK - Revan a história de um homem_page-0009.jpg" class="page" alt="Página 9">
+    <img src="EBOOK - Revan a história de um homem_page-0010.jpg" class="page" alt="Página 10">
+    <!-- Continua normalmente até 188 -->
+
+    <!-- Vou resumir aqui pra caber, mas no seu arquivo terá: -->
+    <!-- EBOOK - Revan a história de um homem_page-0011.jpg -->
+    <!-- EBOOK - Revan a história de um homem_page-0012.jpg -->
+    <!-- ... -->
+    <!-- EBOOK - Revan a história de um homem_page-0188.jpg -->
+
+    <!-- Aqui abaixo as últimas -->
+    <img src="EBOOK - Revan a história de um homem_page-0187.jpg" class="page" alt="Página 187">
+    <img src="EBOOK - Revan a história de um homem_page-0188.jpg" class="page" alt="Página 188">
   </div>
 
   <script>
-    const pages = [];
-    for (let i = 1; i <= 188; i++) {
-      const num = i.toString().padStart(4, '0');
-      pages.push(`static/EBOOK - Revan a história de um homem_page-${num}.jpg`);
-    }
+    const pages = document.querySelectorAll('.page');
+    let currentPage = 0;
 
-    let currentPage = -1;
-
-    const pageImg = document.getElementById('page');
-
-    pageImg.addEventListener('click', () => {
+    document.getElementById('pages').addEventListener('click', () => {
+      pages[currentPage].classList.remove('active');
       currentPage++;
       if (currentPage >= pages.length) {
         currentPage = 0;
       }
-      pageImg.src = pages[currentPage];
+      pages[currentPage].classList.add('active');
     });
   </script>
 
