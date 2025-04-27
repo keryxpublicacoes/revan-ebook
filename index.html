@@ -20,7 +20,7 @@
     .top-banner img {
       width: 90%;
       max-width: 340px;
-      margin-bottom: 20px; /* Aumentado: antes era 10px */
+      margin-bottom: 20px;
     }
     .download-btn {
       background-color: #d3ac67;
@@ -32,11 +32,11 @@
       font-size: 1em;
       cursor: pointer;
       text-decoration: none;
-      margin-bottom: 15px; /* Aumentado espaço abaixo do botão */
+      margin-bottom: 15px;
       display: inline-block;
     }
     .info-text {
-      margin-top: 15px; /* Aumentado */
+      margin-top: 15px;
       font-size: 0.95em;
       color: #ccc;
       padding: 0 10px;
@@ -55,6 +55,7 @@
       max-width: 100%;
       height: auto;
       object-fit: contain;
+      transition: opacity 0.5s ease; /* Efeito de transição adicionado */
     }
     .arrow {
       position: absolute;
@@ -126,7 +127,15 @@
   function updatePage() {
     const img = document.getElementById('ebookPage');
     const pageNumber = currentPage.toString().padStart(4, '0');
-    img.src = `EBOOK - Revan a história de um homem_page-${pageNumber}.jpg`;
+
+    // Efeito de transição: fade-out
+    img.style.opacity = 0;
+
+    setTimeout(() => {
+      img.src = `EBOOK - Revan a história de um homem_page-${pageNumber}.jpg`;
+      img.style.opacity = 1; // Efeito de fade-in
+    }, 300);
+    
     document.getElementById('progressBar').value = currentPage;
     document.getElementById('pageNumber').innerText = `Página ${currentPage} de ${totalPages}`;
   }
