@@ -63,25 +63,14 @@
       margin-bottom: 10px;
     }
     .flipper {
-      position: relative;
+      transition: transform 0.6s ease;
       width: 100%;
       max-width: 500px;
-      height: auto;
     }
-    .ebook-page, .next-page {
-      position: absolute;
-      top: 0;
-      left: 0;
+    .ebook-page {
       width: 100%;
       height: auto;
       object-fit: contain;
-      transition: transform 0.6s ease;
-    }
-    .next-page {
-      z-index: 1;
-    }
-    .current-page {
-      z-index: 2;
     }
     .arrow {
       position: absolute;
@@ -148,8 +137,7 @@
 
   <div class="flip-container">
     <div class="flipper" id="flipper">
-      <img id="currentPage" class="ebook-page current-page" src="EBOOK - Revan a história de um homem_page-0001.jpg" alt="Página Atual">
-      <img id="nextPage" class="ebook-page next-page" src="" alt="Próxima Página">
+      <img id="ebookPage" class="ebook-page" src="EBOOK - Revan a história de um homem_page-0001.jpg" alt="Página do eBook">
     </div>
   </div>
 
@@ -167,64 +155,71 @@
 
 <script>
   const totalPages = 188;
-  let currentPageNumber = 1;
-  const currentPage = document.getElementById('currentPage');
-  const nextPage = document.getElementById('nextPage');
+  let currentPage = 1;
+  const flipper = document.getElementById('flipper');
+  const ebookPage = document.getElementById('ebookPage');
 
   function updatePage(direction) {
-    const newPageNumber = currentPageNumber.toString().padStart(4, '0');
-    nextPage.src = `EBOOK - Revan a história de um homem_page-${newPageNumber}.jpg`;
+    const pageNumber = currentPage.toString().padStart(4, '0');
 
     if (direction === 'next') {
-      currentPage.style.transform = 'translateX(-100%)';
+      flipper.style.transform = 'translateX(-100%)';
+      setTimeout(() => {
+        ebookPage.src = `EBOOK - Revan a história de um homem_page-${pageNumber}.jpg`;
+        flipper.style.transition = 'none';
+        flipper.style.transform = 'translateX(100%)';
+        void flipper.offsetWidth; // reflow
+        flipper.style.transition = 'transform 0.6s ease';
+        flipper.style.transform = 'translateX(0%)';
+      }, 300);
     } else if (direction === 'previous') {
-      currentPage.style.transform = 'translateX(100%)';
+      flipper.style.transform = 'translateX(100%)';
+      setTimeout(() => {
+        ebookPage.src = `EBOOK - Revan a história de um homem_page-${pageNumber}.jpg`;
+        flipper.style.transition = 'none';
+        flipper.style.transform = 'translateX(-100%)';
+        void flipper.offsetWidth; // reflow
+        flipper.style.transition = 'transform 0.6s ease';
+        flipper.style.transform = 'translateX(0%)';
+      }, 300);
     }
 
-    setTimeout(() => {
-      currentPage.src = nextPage.src;
-      currentPage.style.transition = 'none';
-      currentPage.style.transform = 'translateX(0%)';
-      void currentPage.offsetWidth; // reflow
-      currentPage.style.transition = 'transform 0.6s ease';
-    }, 300);
-
-    document.getElementById('progressBar').value = currentPageNumber;
-    document.getElementById('pageNumber').innerText = `Página ${currentPageNumber} de ${totalPages}`;
+    document.getElementById('progressBar').value = currentPage;
+    document.getElementById('pageNumber').innerText = `Página ${currentPage} de ${totalPages}`;
   }
 
-  function nextPageFunc() {
-    if (currentPageNumber < totalPages) {
-      currentPageNumber++;
+  function nextPage() {
+    if (currentPage < totalPages) {
+      currentPage++;
       updatePage('next');
     }
   }
 
   function previousPage() {
-    if (currentPageNumber > 1) {
-      currentPageNumber--;
+    if (currentPage > 1) {
+      currentPage--;
       updatePage('previous');
     }
   }
 
   document.getElementById('progressBar').addEventListener('input', (e) => {
     const newPage = parseInt(e.target.value);
-    if (newPage > currentPageNumber) {
-      currentPageNumber = newPage;
+    if (newPage > currentPage) {
+      currentPage = newPage;
       updatePage('next');
     } else {
-      currentPageNumber = newPage;
+      currentPage = newPage;
       updatePage('previous');
     }
   });
 
-  document.getElementById('currentPage').addEventListener('click', (e) => {
+  document.getElementById('ebookPage').addEventListener('click', (e) => {
     const x = e.clientX;
     const screenWidth = window.innerWidth;
     if (x < screenWidth / 2) {
       previousPage();
     } else {
-      nextPageFunc();
+      nextPage();
     }
   });
 </script>
