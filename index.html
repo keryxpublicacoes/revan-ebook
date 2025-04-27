@@ -51,11 +51,23 @@
       justify-content: center;
       padding: 10px 0;
     }
+    .flip-container {
+      perspective: 1000px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+    .flipper {
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+      width: 100%;
+      max-width: 500px;
+    }
     .ebook-page {
-      max-width: 100%;
+      width: 100%;
       height: auto;
       object-fit: contain;
-      transition: opacity 0.5s ease; /* Efeito de transição adicionado */
+      backface-visibility: hidden;
     }
     .arrow {
       position: absolute;
@@ -111,7 +123,13 @@
 
 <div class="ebook-container">
   <button class="arrow left-arrow" onclick="previousPage()">&#x25C0;</button>
-  <img id="ebookPage" class="ebook-page" src="EBOOK - Revan a história de um homem_page-0001.jpg" alt="Página do eBook">
+
+  <div class="flip-container">
+    <div class="flipper" id="flipper">
+      <img id="ebookPage" class="ebook-page" src="EBOOK - Revan a história de um homem_page-0001.jpg" alt="Página do eBook">
+    </div>
+  </div>
+
   <button class="arrow right-arrow" onclick="nextPage()">&#x25B6;</button>
 </div>
 
@@ -123,19 +141,23 @@
 <script>
   const totalPages = 188;
   let currentPage = 1;
+  let flipper = document.getElementById('flipper');
 
   function updatePage() {
     const img = document.getElementById('ebookPage');
     const pageNumber = currentPage.toString().padStart(4, '0');
 
-    // Efeito de transição: fade-out
-    img.style.opacity = 0;
-
-    setTimeout(() => {
+    // Se for a partir da segunda página, faz o efeito de flip
+    if (currentPage > 1) {
+      flipper.style.transform = 'rotateY(180deg)';
+      setTimeout(() => {
+        img.src = `EBOOK - Revan a história de um homem_page-${pageNumber}.jpg`;
+        flipper.style.transform = 'rotateY(0deg)';
+      }, 400);
+    } else {
       img.src = `EBOOK - Revan a história de um homem_page-${pageNumber}.jpg`;
-      img.style.opacity = 1; // Efeito de fade-in
-    }, 300);
-    
+    }
+
     document.getElementById('progressBar').value = currentPage;
     document.getElementById('pageNumber').innerText = `Página ${currentPage} de ${totalPages}`;
   }
