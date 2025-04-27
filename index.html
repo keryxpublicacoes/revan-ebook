@@ -23,7 +23,7 @@
     .top-banner img {
       width: 90%;
       max-width: 340px;
-      margin-bottom: 15px; /* reduzido */
+      margin-bottom: 15px;
     }
     .download-btn {
       background-color: #d3ac67;
@@ -35,11 +35,11 @@
       font-size: 1em;
       cursor: pointer;
       text-decoration: none;
-      margin-bottom: 10px; /* reduzido */
+      margin-bottom: 10px;
       display: inline-block;
     }
     .info-text {
-      margin-top: 10px; /* reduzido */
+      margin-top: 10px;
       font-size: 0.95em;
       color: #ccc;
       padding: 0 10px;
@@ -60,17 +60,28 @@
       display: flex;
       justify-content: center;
       position: relative;
-      margin-bottom: 10px; /* diminui espaço com a barra */
+      margin-bottom: 10px;
     }
     .flipper {
-      transition: transform 0.6s ease;
+      position: relative;
       width: 100%;
       max-width: 500px;
+      height: auto;
     }
-    .ebook-page {
+    .ebook-page, .next-page {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: auto;
       object-fit: contain;
+      transition: transform 0.6s ease;
+    }
+    .next-page {
+      z-index: 1;
+    }
+    .current-page {
+      z-index: 2;
     }
     .arrow {
       position: absolute;
@@ -137,7 +148,8 @@
 
   <div class="flip-container">
     <div class="flipper" id="flipper">
-      <img id="ebookPage" class="ebook-page" src="EBOOK - Revan a história de um homem_page-0001.jpg" alt="Página do eBook">
+      <img id="currentPage" class="ebook-page current-page" src="EBOOK - Revan a história de um homem_page-0001.jpg" alt="Página Atual">
+      <img id="nextPage" class="ebook-page next-page" src="" alt="Próxima Página">
     </div>
   </div>
 
@@ -155,71 +167,64 @@
 
 <script>
   const totalPages = 188;
-  let currentPage = 1;
-  const flipper = document.getElementById('flipper');
-  const ebookPage = document.getElementById('ebookPage');
+  let currentPageNumber = 1;
+  const currentPage = document.getElementById('currentPage');
+  const nextPage = document.getElementById('nextPage');
 
   function updatePage(direction) {
-    const pageNumber = currentPage.toString().padStart(4, '0');
+    const newPageNumber = currentPageNumber.toString().padStart(4, '0');
+    nextPage.src = `EBOOK - Revan a história de um homem_page-${newPageNumber}.jpg`;
 
     if (direction === 'next') {
-      flipper.style.transform = 'translateX(-100%)';
-      setTimeout(() => {
-        ebookPage.src = `EBOOK - Revan a história de um homem_page-${pageNumber}.jpg`;
-        flipper.style.transition = 'none';
-        flipper.style.transform = 'translateX(100%)';
-        void flipper.offsetWidth;
-        flipper.style.transition = 'transform 0.6s ease';
-        flipper.style.transform = 'translateX(0%)';
-      }, 300);
+      currentPage.style.transform = 'translateX(-100%)';
     } else if (direction === 'previous') {
-      flipper.style.transform = 'translateX(100%)';
-      setTimeout(() => {
-        ebookPage.src = `EBOOK - Revan a história de um homem_page-${pageNumber}.jpg`;
-        flipper.style.transition = 'none';
-        flipper.style.transform = 'translateX(-100%)';
-        void flipper.offsetWidth;
-        flipper.style.transition = 'transform 0.6s ease';
-        flipper.style.transform = 'translateX(0%)';
-      }, 300);
+      currentPage.style.transform = 'translateX(100%)';
     }
 
-    document.getElementById('progressBar').value = currentPage;
-    document.getElementById('pageNumber').innerText = `Página ${currentPage} de ${totalPages}`;
+    setTimeout(() => {
+      currentPage.src = nextPage.src;
+      currentPage.style.transition = 'none';
+      currentPage.style.transform = 'translateX(0%)';
+      void currentPage.offsetWidth; // reflow
+      currentPage.style.transition = 'transform 0.6s ease';
+    }, 300);
+
+    document.getElementById('progressBar').value = currentPageNumber;
+    document.getElementById('pageNumber').innerText = `Página ${currentPageNumber} de ${totalPages}`;
   }
 
-  function nextPage() {
-    if (currentPage < totalPages) {
-      currentPage++;
+  function nextPageFunc() {
+    if (currentPageNumber < totalPages) {
+      currentPageNumber++;
       updatePage('next');
     }
   }
 
   function previousPage() {
-    if (currentPage > 1) {
-      currentPage--;
+    if (currentPageNumber > 1) {
+      currentPageNumber--;
       updatePage('previous');
     }
   }
 
   document.getElementById('progressBar').addEventListener('input', (e) => {
     const newPage = parseInt(e.target.value);
-    if (newPage > currentPage) {
-      currentPage = newPage;
+    if (newPage > currentPageNumber) {
+      currentPageNumber = newPage;
       updatePage('next');
     } else {
-      currentPage = newPage;
+      currentPageNumber = newPage;
       updatePage('previous');
     }
   });
 
-  document.getElementById('ebookPage').addEventListener('click', (e) => {
+  document.getElementById('currentPage').addEventListener('click', (e) => {
     const x = e.clientX;
     const screenWidth = window.innerWidth;
     if (x < screenWidth / 2) {
       previousPage();
     } else {
-      nextPage();
+      nextPageFunc();
     }
   });
 </script>
