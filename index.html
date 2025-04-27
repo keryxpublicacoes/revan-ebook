@@ -1,130 +1,100 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Revan eBook</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Revan - eBook</title>
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #000;
-      color: #fff;
-      overflow-x: hidden;
+      background: black;
+      color: white;
     }
-    .header {
-      background: #000;
+    .container {
       text-align: center;
-      padding: 20px 0;
+      padding: 10px;
     }
-    .header img {
-      max-width: 100px;
-      margin-bottom: 10px;
+    .mockup {
+      max-width: 90%;
+      height: auto;
+      margin-top: 10px;
     }
-    .download-btn {
-      background: #d3ac67;
-      color: #000;
-      font-weight: bold;
+    .button {
+      background-color: #d3ac67;
+      color: black;
       border: none;
       padding: 10px 20px;
       border-radius: 6px;
       font-size: 1em;
+      font-weight: bold;
+      margin: 15px 0;
       cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
     }
     .description {
-      text-align: center;
-      padding: 10px 20px;
-      font-size: 0.95em;
-      color: #ccc;
+      margin: 10px 0;
+      font-size: 0.9em;
+      padding: 0 15px;
     }
-    .ebook-container {
-      text-align: center;
-      position: relative;
-      margin-top: 20px;
-    }
-    .ebook-page {
+    .ebook {
       max-width: 100%;
       height: auto;
-      display: block;
-      margin: 0 auto;
     }
-    .arrows {
-      display: flex;
-      justify-content: space-between;
-      position: absolute;
-      top: 50%;
-      width: 100%;
-      padding: 0 10px;
-      transform: translateY(-50%);
-      pointer-events: none;
+    .navigation {
+      margin-top: 10px;
     }
     .arrow {
-      background: #000;
-      color: #fff;
       font-size: 2em;
-      padding: 5px 10px;
-      border-radius: 50%;
+      color: white;
+      background: none;
+      border: none;
       cursor: pointer;
-      pointer-events: auto;
-      user-select: none;
+      margin: 0 20px;
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <img src="mockup_cel.png" alt="Mockup eBook">
-    <br>
-    <a href="https://drive.google.com/file/d/18a9bi1r2_rMeg9c8diNH9WT1aD68oNT4/view?usp=sharing" target="_blank" class="download-btn">Baixar PDF Completo</a>
-  </div>
 
-  <div class="description">
+<div class="container">
+  <img src="mockup_cel.png" alt="Mockup eBook" class="mockup">
+  <br>
+  <a href="https://drive.google.com/file/d/18a9bi1r2_rMeg9c8diNH9WT1aD68oNT4/view?usp=sharing" target="_blank">
+    <button class="button">Baixar PDF Completo</button>
+  </a>
+  <p class="description">
     Você pode fazer o download do seu e-book em PDF ou tocar na tela para ler diretamente abaixo.
+  </p>
+  <img id="ebook" src="EBOOK - Revan a história de um homem_page-0001.jpg" alt="Ebook" class="ebook">
+  <div class="navigation">
+    <button onclick="prevPage()" class="arrow">&#8592;</button>
+    <button onclick="nextPage()" class="arrow">&#8594;</button>
   </div>
+</div>
 
-  <div class="ebook-container">
-    <img id="ebook-page" class="ebook-page" src="lombada.png" alt="Lombada do Livro">
-    <div class="arrows">
-      <div class="arrow" onclick="prevPage()">&#8592;</div>
-      <div class="arrow" onclick="nextPage()">&#8594;</div>
-    </div>
-  </div>
+<script>
+  let currentPage = 1;
+  const totalPages = 188;
 
-  <script>
-    const pages = [
-      "lombada.png",
-      "EBOOK - Revan a história de um homem_page-0001.jpg",
-      "EBOOK - Revan a história de um homem_page-0002.jpg",
-      "EBOOK - Revan a história de um homem_page-0003.jpg",
-      "EBOOK - Revan a história de um homem_page-0004.jpg",
-      // Adicione todas as outras imagens seguindo a sequência...
-      "EBOOK - Revan a história de um homem_page-0188.jpg"
-    ];
+  function updateImage() {
+    const ebook = document.getElementById('ebook');
+    const pageNum = currentPage.toString().padStart(4, '0');
+    ebook.src = `EBOOK - Revan a história de um homem_page-${pageNum}.jpg`;
+  }
 
-    let currentPage = 0;
-    const ebookImg = document.getElementById('ebook-page');
-
-    function showPage(index) {
-      if (index >= 0 && index < pages.length) {
-        ebookImg.src = pages[index];
-        currentPage = index;
-      }
+  function nextPage() {
+    if (currentPage < totalPages) {
+      currentPage++;
+      updateImage();
     }
+  }
 
-    function nextPage() {
-      if (currentPage < pages.length - 1) {
-        showPage(currentPage + 1);
-      }
+  function prevPage() {
+    if (currentPage > 1) {
+      currentPage--;
+      updateImage();
     }
+  }
+</script>
 
-    function prevPage() {
-      if (currentPage > 0) {
-        showPage(currentPage - 1);
-      }
-    }
-
-    ebookImg.addEventListener('click', nextPage);
-  </script>
 </body>
 </html>
