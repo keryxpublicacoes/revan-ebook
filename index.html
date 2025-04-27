@@ -3,141 +3,160 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Revan – Leitura do eBook</title>
+  <title>Revan eBook</title>
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #000;
+      background-color: #000;
       color: #fff;
+      font-family: Arial, sans-serif;
       overflow-x: hidden;
     }
-    .mockup-topo {
-      width: 100%;
-      height: auto;
-      max-height: 420px;
-      object-fit: cover;
+    .top-banner {
+      background-color: #111;
+      padding: 20px;
+      text-align: center;
+    }
+    .top-banner img {
+      width: 80%;
+      max-width: 280px;
+      margin-bottom: 15px;
+    }
+    .download-btn {
+      background-color: #d3ac67;
+      color: #000;
+      font-weight: bold;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+      text-decoration: none;
     }
     .info-text {
-      text-align: center;
-      padding: 10px 20px 0;
-      font-size: 0.9em;
-      color: #d3ac67;
+      margin-top: 15px;
+      font-size: 0.95em;
+      color: #ccc;
+      padding: 0 10px;
     }
-    .gallery {
-      display: flex;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      margin-top: 10px;
-      margin-bottom: 10px;
-    }
-    .gallery img {
-      flex: 0 0 100%;
-      scroll-snap-align: start;
+    .ebook-container {
+      position: relative;
       width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .ebook-page {
+      max-width: 100%;
       height: auto;
+      object-fit: contain;
     }
     .arrow {
-      position: fixed;
+      position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      background: transparent;
-      border: none;
       font-size: 2em;
-      color: #000;
+      color: black;
+      background-color: transparent;
+      border: none;
       cursor: pointer;
       z-index: 10;
-      user-select: none;
     }
-    .arrow-left {
-      left: 10px;
-    }
-    .arrow-right {
-      right: 10px;
-    }
-    .progress-container {
+    .left-arrow { left: 10px; }
+    .right-arrow { right: 10px; }
+    .progress-bar-container {
       width: 100%;
-      height: 8px;
-      background: #333;
-      position: fixed;
-      bottom: 0;
-      left: 0;
+      padding: 10px 0;
+      background-color: #111;
     }
     .progress-bar {
-      height: 8px;
+      width: 90%;
+      margin: 0 auto;
+      appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: #333;
+    }
+    .progress-bar::-webkit-slider-thumb {
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
       background: #d3ac67;
-      width: 0%;
+      cursor: pointer;
+      margin-top: -4px;
     }
     .page-number {
       text-align: center;
       font-size: 0.9em;
-      margin: 6px 0;
-      color: #d3ac67;
+      color: #ccc;
+      margin-top: 5px;
     }
   </style>
 </head>
 <body>
-  <img src="../static/mockup_cel.png" alt="Banner" class="mockup-topo">
 
-  <div class="info-text">
-    Você pode fazer o download do seu e-book em PDF ou tocar na tela para ler diretamente abaixo.
-  </div>
+<div class="top-banner">
+  <img src="mockup_cel.png" alt="Mockup eBook">
+  <br>
+  <a class="download-btn" href="https://drive.google.com/file/d/18a9bi1r2_rMeg9c8diNH9WT1aD68oNT4/view?usp=sharing" target="_blank">Baixar PDF Completo</a>
+  <p class="info-text">Você pode fazer o download do seu e-book em PDF ou tocar na tela para ler diretamente abaixo.</p>
+</div>
 
-  <div class="page-number" id="page-number">Página 1</div>
+<div class="ebook-container">
+  <button class="arrow left-arrow" onclick="previousPage()">⬅</button>
+  <img id="ebookPage" class="ebook-page" src="EBOOK - Revan a história de um homem_page-0001.jpg" alt="Página do eBook">
+  <button class="arrow right-arrow" onclick="nextPage()">➡</button>
+</div>
 
-  <button class="arrow arrow-left" id="prev">&#10094;&#10094;</button>
-  <button class="arrow arrow-right" id="next">&#10095;&#10095;</button>
+<div class="progress-bar-container">
+  <input type="range" id="progressBar" class="progress-bar" min="1" max="188" value="1">
+  <div class="page-number" id="pageNumber">Página 1 de 188</div>
+</div>
 
-  <div class="gallery" id="gallery">
-    <img src="../static/lombada.png" alt="Lombada">
-    <!-- As imagens do eBook -->
-    <!-- Exemplo de chamada (já no formato correto) -->
-    <script>
-      for (let i = 1; i <= 188; i++) {
-        const img = document.createElement('img');
-        const numero = i.toString().padStart(4, '0');
-        img.src = `../static/EBOOK - Revan a história de um homem_page-${numero}.jpg`;
-        img.alt = `Página ${i}`;
-        document.getElementById('gallery').appendChild(img);
-      }
-    </script>
-  </div>
+<script>
+  const totalPages = 188;
+  let currentPage = 1;
 
-  <div class="progress-container">
-    <div class="progress-bar" id="progress"></div>
-  </div>
+  function updatePage() {
+    const img = document.getElementById('ebookPage');
+    const pageNumber = currentPage.toString().padStart(4, '0');
+    img.src = `EBOOK - Revan a história de um homem_page-${pageNumber}.jpg`;
+    document.getElementById('progressBar').value = currentPage;
+    document.getElementById('pageNumber').innerText = `Página ${currentPage} de ${totalPages}`;
+  }
 
-  <script>
-    const gallery = document.getElementById('gallery');
-    const progress = document.getElementById('progress');
-    const pageNumber = document.getElementById('page-number');
+  function nextPage() {
+    if (currentPage < totalPages) {
+      currentPage++;
+      updatePage();
+    }
+  }
 
-    document.getElementById('next').onclick = () => {
-      gallery.scrollBy({left: window.innerWidth, behavior: 'smooth'});
-    };
-    document.getElementById('prev').onclick = () => {
-      gallery.scrollBy({left: -window.innerWidth, behavior: 'smooth'});
-    };
+  function previousPage() {
+    if (currentPage > 1) {
+      currentPage--;
+      updatePage();
+    }
+  }
 
-    gallery.addEventListener('scroll', () => {
-      const scrollLeft = gallery.scrollLeft;
-      const totalWidth = gallery.scrollWidth - gallery.clientWidth;
-      const scrollPercent = (scrollLeft / totalWidth) * 100;
-      progress.style.width = scrollPercent + '%';
-      const page = Math.round(scrollLeft / window.innerWidth) + 1;
-      pageNumber.textContent = 'Página ' + page;
-    });
+  document.getElementById('progressBar').addEventListener('input', (e) => {
+    currentPage = parseInt(e.target.value);
+    updatePage();
+  });
 
-    gallery.addEventListener('click', (e) => {
-      const clickX = e.clientX;
-      if (clickX < window.innerWidth/2) {
-        gallery.scrollBy({left: -window.innerWidth, behavior: 'smooth'});
-      } else {
-        gallery.scrollBy({left: window.innerWidth, behavior: 'smooth'});
-      }
-    });
-  </script>
+  document.getElementById('ebookPage').addEventListener('click', (e) => {
+    const x = e.clientX;
+    const screenWidth = window.innerWidth;
+    if (x < screenWidth / 2) {
+      previousPage();
+    } else {
+      nextPage();
+    }
+  });
+</script>
+
 </body>
 </html>
